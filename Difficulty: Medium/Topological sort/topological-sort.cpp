@@ -1,29 +1,30 @@
 class Solution {
   public:
-    void dfs(int node, vector<vector<int>> &adj, vector<int> &vis, stack<int> &st){
-        vis[node] = 1;
-        for(int child: adj[node]){
-            if(!vis[child]) dfs(child, adj, vis, st);
-        }
-        st.push(node);
-    }
-    
     vector<int> topoSort(int V, vector<vector<int>>& edges) {
         // code here
+        vector<int> indegree(V, 0);
         vector<vector<int>> adj(V);
         for(auto it: edges){
+            indegree[it[1]]++;
             adj[it[0]].push_back(it[1]);
         }
-        vector<int> vis(V, 0);
-        stack<int> st;
-        for(int i = 0; i < V; i++){
-            if(!vis[i]) dfs(i, adj, vis, st);
-        }
+        // for(auto it: indegree) cout << it << " ";
+        queue<int> q;
         vector<int> ans;
-        while(!st.empty()){
-            ans.push_back(st.top());
-            st.pop();
+        for(int i = 0; i < V; i++){
+            if(indegree[i] == 0) q.push(i);
         }
+        while(!q.empty()){
+            int node = q.front();
+            q.pop();
+            ans.push_back(node);
+            for(int child: adj[node]){
+                indegree[child]--;
+                if(indegree[child] == 0) q.push(child);
+                // cout << indegree[child] << endl;
+            }
+        }
+        // for(auto it: ans) cout << it << " ";
         return ans;
     }
 };
